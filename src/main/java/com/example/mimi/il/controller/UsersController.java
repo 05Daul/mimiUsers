@@ -55,9 +55,16 @@ public class UsersController {
     }
 
     @PostMapping("/findbyid")
-    public ResponseEntity<Optional<User>> findById(@RequestHeader("userId") String userId) {
-        Optional<User> user = service.findById(userId);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<User> findById(@RequestHeader("userId") String userId) {
+        Optional<User> userOptional = service.findById(userId);
+        if (userOptional.isPresent()) {
+            // Optional이 값이 존재하면 그 값을 반환
+            User user = userOptional.get();
+            return ResponseEntity.ok(user);
+        } else {
+            // Optional이 비어있으면 404 Not Found를 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @GetMapping("/findAll")
