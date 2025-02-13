@@ -3,9 +3,9 @@ name: Push YAML to Another Repo
 on:
   push:
     branches:
-      -  daul #(트리거할 브랜치)
+      - daul  # 트리거할 브랜치
     paths:
-      - "argo/**/*.yaml"  # argo 폴더 내의 YAML 파일 변경 시 실행
+      - "argo/*.yaml"  # argo 폴더 내의 YAML 파일 변경 시 실행
   workflow_dispatch:
 
 jobs:
@@ -23,17 +23,18 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
-      - name: mimiyaml.git
+      - name: 저장소 B (`mimiyaml.git`) 클론
         run: |
           git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/05Daul/mimiyaml.git repo_b
           cd repo_b
+          git checkout daul || git checkout -b daul 
           git config user.name "05Daul"
           git config user.email "elre519@naver.com"
 
       - name: YAML 파일 복사 및 푸시
         run: |
-          cp -r argo/*.yaml repo_b/  # YAML 파일 복사
+          cp -r argo/*.yaml repo_b/argo/ 
           cd repo_b
           git add .
-          git commit -m "자동 업데이트: 저장소 A에서 YAML 파일 변경됨"
+          git commit -m "자동 업데이트: 저장소 A에서 YAML 파일 변경됨" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/05Daul/mimiyaml.git daul
